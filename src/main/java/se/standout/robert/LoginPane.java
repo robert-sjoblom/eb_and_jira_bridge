@@ -30,10 +30,13 @@ public class LoginPane extends JPanel {
     submit = new JButton("Submit");
     submit.addActionListener( new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        // this is an example of how to hide a panel;
+        // we probably want to send in the submit button listener so that it
+        // has access to an outer scope that controls the pane and switches
+        // to a progress pane?
         System.out.println("The current panel is " + this);
         LoginPane.this.dispose();
       }
-
     });
     add(submit, gbc);
 
