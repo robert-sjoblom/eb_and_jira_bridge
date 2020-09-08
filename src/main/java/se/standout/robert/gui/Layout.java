@@ -1,7 +1,6 @@
-package se.standout.robert;
+package se.standout.robert.gui;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;

@@ -1,4 +1,4 @@
-package se.standout.robert;
+package se.standout.robert.gui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -12,7 +12,6 @@ import java.awt.event.WindowEvent;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -31,42 +30,38 @@ public class Test {
   protected static final Random AUTHENTICATION_ORACLE = new Random();
 
   public Test() {
-    EventQueue.invokeLater(
-        new Runnable() {
+    EventQueue.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+            | UnsupportedLookAndFeelException ex) {
+          ex.printStackTrace();
+        }
+
+        LoginViewController controller = new LoginViewController() {
           @Override
-          public void run() {
-            try {
-              UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException
-                | InstantiationException
-                | IllegalAccessException
-                | UnsupportedLookAndFeelException ex) {
-              ex.printStackTrace();
-            }
-
-            LoginViewController controller =
-                new LoginViewController() {
-                  @Override
-                  public void authenticationWasRequested(LoginView view) {
-                    view.willAuthenticate();
-                    LoginAuthenticator authenticator = new LoginAuthenticator(view);
-                    authenticator.authenticate();
-                  }
-
-                  @Override
-                  public void loginWasCancelled(LoginView view) {
-                    view.dismissView();
-                  }
-                };
-
-            if (LoginPane.showLoginDialog(controller)) {
-              System.out.println("You shell pass");
-            } else {
-              System.out.println("You shell not pass");
-            }
-            System.exit(0);
+          public void authenticationWasRequested(LoginView view) {
+            view.willAuthenticate();
+            LoginAuthenticator authenticator = new LoginAuthenticator(view);
+            authenticator.authenticate();
           }
-        });
+
+          @Override
+          public void loginWasCancelled(LoginView view) {
+            view.dismissView();
+          }
+        };
+
+        if (LoginPane.showLoginDialog(controller)) {
+          System.out.println("You shell pass");
+        } else {
+          System.out.println("You shell not pass");
+        }
+        System.exit(0);
+      }
+    });
   }
 
   public static void main(String[] args) {
@@ -113,6 +108,10 @@ public class Test {
 
   public static class LoginPane extends JPanel implements LoginView, CredentialsViewController {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final CredentialsPane credentialView;
     private final JButton btnAuthenticate;
     private final JButton btnCancel;
@@ -136,23 +135,21 @@ public class Test {
       credentialView = new CredentialsPane(this);
       add(credentialView);
 
-      btnAuthenticate.addActionListener(
-          new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              getLoginViewController().authenticationWasRequested(LoginPane.this);
-            }
-          });
-      btnCancel.addActionListener(
-          new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              getLoginViewController().loginWasCancelled(LoginPane.this);
-              // I did think about calling dispose here,
-              // but's not really the the job of the cancel button to decide what should happen
-              // here...
-            }
-          });
+      btnAuthenticate.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          getLoginViewController().authenticationWasRequested(LoginPane.this);
+        }
+      });
+      btnCancel.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          getLoginViewController().loginWasCancelled(LoginPane.this);
+          // I did think about calling dispose here,
+          // but's not really the the job of the cancel button to decide what should happen
+          // here...
+        }
+      });
 
       validateCredentials();
     }
@@ -168,13 +165,12 @@ public class Test {
       dialog.pack();
       dialog.setLocationRelativeTo(null);
       dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-      dialog.addWindowListener(
-          new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-              pane.getLoginViewController().loginWasCancelled(pane);
-            }
-          });
+      dialog.addWindowListener(new WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent e) {
+          pane.getLoginViewController().loginWasCancelled(pane);
+        }
+      });
       dialog.setVisible(true);
 
       return pane.wasAuthenticated();
@@ -188,10 +184,8 @@ public class Test {
       CredentialsView view = getCredentialsView();
       String userName = view.getUserName();
       char[] password = view.getPassword();
-      btnAuthenticate.setEnabled(
-          (userName != null && userName.trim().length() > 0)
-              && (password != null && password.length > 0)
-      );
+      btnAuthenticate.setEnabled((userName != null && userName.trim().length() > 0)
+          && (password != null && password.length > 0));
     }
 
     @Override
@@ -240,6 +234,10 @@ public class Test {
 
   public static class CredentialsPane extends JPanel implements CredentialsView {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final JTextField userNameField;
     private final JPasswordField passwordField;
     private CredentialsViewController controller;
@@ -268,23 +266,22 @@ public class Test {
       gbc.gridy++;
       add(passwordField, gbc);
 
-      DocumentListener listener =
-          new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-              getCredentialsViewController().credentialsDidChange(CredentialsPane.this);
-            }
+      DocumentListener listener = new DocumentListener() {
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+          getCredentialsViewController().credentialsDidChange(CredentialsPane.this);
+        }
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-              getCredentialsViewController().credentialsDidChange(CredentialsPane.this);
-            }
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+          getCredentialsViewController().credentialsDidChange(CredentialsPane.this);
+        }
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-              getCredentialsViewController().credentialsDidChange(CredentialsPane.this);
-            }
-          };
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+          getCredentialsViewController().credentialsDidChange(CredentialsPane.this);
+        }
+      };
 
       userNameField.getDocument().addDocumentListener(listener);
       passwordField.getDocument().addDocumentListener(listener);
@@ -323,8 +320,8 @@ public class Test {
       userNameField.requestFocusInWindow();
       userNameField.selectAll();
 
-      JOptionPane.showMessageDialog(
-          this, "Authentication has failed", "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Authentication has failed", "Error",
+          JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
@@ -342,30 +339,27 @@ public class Test {
     }
 
     public void authenticate() {
-      Thread t =
-          new Thread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  try {
-                    Thread.sleep(2000);
-                  } catch (InterruptedException ex) {
-                    Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-                  }
-                  SwingUtilities.invokeLater(
-                      new Runnable() {
-                        @Override
-                        public void run() {
-                          if (AUTHENTICATION_ORACLE.nextBoolean()) {
-                            view.authenticationSucceeded();
-                            view.dismissView();
-                          } else {
-                            view.authenticationFailed();
-                          }
-                        }
-                      });
-                }
-              });
+      Thread t = new Thread(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            Thread.sleep(2000);
+          } catch (InterruptedException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              if (AUTHENTICATION_ORACLE.nextBoolean()) {
+                view.authenticationSucceeded();
+                view.dismissView();
+              } else {
+                view.authenticationFailed();
+              }
+            }
+          });
+        }
+      });
       t.start();
     }
   }
