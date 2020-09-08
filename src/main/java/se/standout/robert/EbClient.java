@@ -53,4 +53,8 @@ public class EbClient extends ExtraBrainClient {
 			e.printStackTrace();
 		}
 	}
+
+	public Credentials getCredentials() {
+		return credentials;
+	}
 }
