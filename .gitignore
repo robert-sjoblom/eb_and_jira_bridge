@@ -172,3 +172,10 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,intellij,java,maven
+.vscode/*
+.settings/*
+.idea/*
+
+# I think this should be removed
+.project
+.classpath
