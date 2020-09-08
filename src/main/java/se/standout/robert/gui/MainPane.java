@@ -3,11 +3,15 @@ package se.standout.robert;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+
 import javax.swing.JPanel;
 
 public class MainPane extends JPanel {
-  private LoginPane loginPane;
+  private final LoginPane loginPane;
 
+  /**
+   * This holds the layout for the entire application.
+   */
   public MainPane() {
     setLayout(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
@@ -21,5 +25,4 @@ public class MainPane extends JPanel {
 
     add((loginPane = new LoginPane()), gbc);
   }
-
 }
